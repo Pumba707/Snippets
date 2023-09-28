@@ -33,11 +33,19 @@ def snippets_page(request):
 
     snippets = Snippet.objects.all()
 
+    ShowHidden = request.session.get("show_hidden", False)
+
     context = {
         'pagename': 'Просмотр сниппетов',
+        'ShowHidden': ShowHidden,
         'snippets': snippets,
     }
+
+
+
     return render(request, 'pages/view_snippets.html', context)
+
+
 
 def snippet_detail(request, snippet_id):
 
@@ -85,7 +93,8 @@ def snippet_update(request, snippet_id):
         form = SnippetForm( 
             {
                 'name': snippet.name,
-                'lang': invLANGS[snippet.lang],
+                'lang': snippet.lang,
+                'hidden': snippet.hidden,
                 'code': snippet.code 
             } )
         context = {
@@ -106,9 +115,12 @@ def snippet_update(request, snippet_id):
         if form.is_valid():
 
             snippet = Snippet.objects.get(id=snippet_id)
-            print(form.data['name'])
             snippet.name = form.data['name']
-            snippet.lang = LANGS[form.data['lang']]
+            snippet.lang = form.data['lang']
+            if form.data.get('hidden') == 'on':
+                snippet.hidden = True
+            else:
+                snippet.hidden = False
             snippet.code = form.data['code']
             snippet.save()
 
@@ -118,4 +130,14 @@ def snippet_update(request, snippet_id):
 
 
 
+def show_hidden(request):
+    request.session["show_hidden"] = True
 
+    return redirect('snippets-list')
+
+
+
+def hide_hidden(request):
+    request.session["show_hidden"] = False
+
+    return redirect('snippets-list')

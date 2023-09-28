@@ -11,8 +11,17 @@
 
         <div class="row">
             <div class="col">
-                <p>На данной страницы будут отображаться все созданные сниппеты.</p>
-                <p>Пока тут просто пример, но скоро заменим реальными сниппетами из БД!</p>
+                <p>
+                    {% if ShowHidden %}
+                        Показываю скрытые записи
+                    {% else %}
+                        Скрываю скрытые записи
+                    {% endif %}
+                    / 
+                    <a href="{% url 'show-hidden' %}">Показать скрытое</a>
+                    / 
+                    <a href="{% url 'hide-hidden' %}">Спрятать скрытое</a>
+                </p>
                 <hr>
             </div>
         </div>
@@ -32,17 +41,21 @@
 
                     {% for snippet in snippets %}
 
-                    <tr>
-                        <td scope="row">{{snippet.id}}</td>
-                        <td>
-                            <a href="{% url 'snippet-detail' snippet.id %}">{{snippet.name}}</a>
-                            <a href="{% url 'snippet-update' snippet.id %}">
-                                <i style="color: blue" class="fa-sharp fa-solid fa-pen"></i>
-                            </a>
-                        </td>
-                        <td>{{snippet.creation_date}}</td>
-                        <td><a href="{% url 'snippet-delete' snippet.id %}">Удалить</a></td>
-                    </tr>
+                        {% if ShowHidden or not snippet.hidden %}
+
+                            <tr>
+                                <td scope="row">{{snippet.id}}</td>
+                                <td>
+                                    <a href="{% url 'snippet-detail' snippet.id %}">{{snippet.name}}</a>
+                                    <a href="{% url 'snippet-update' snippet.id %}">
+                                        <i style="color: blue" class="fa-sharp fa-solid fa-pen"></i>
+                                    </a>
+                                </td>
+                                <td>{{snippet.creation_date}}</td>
+                                <td><a href="{% url 'snippet-delete' snippet.id %}">Удалить</a></td>
+                            </tr>
+
+                        {% endif %}
 
                     {% endfor %}
 
