@@ -84,12 +84,6 @@ def snippet_update(request, snippet_id):
 
         snippet = Snippet.objects.get(id=snippet_id)
 
-        invLANGS = {
-            'Python': 'py',
-            'JavaScript': 'js',
-            'C++': 'cpp',
-        }
-
         form = SnippetForm( 
             {
                 'name': snippet.name,
@@ -104,12 +98,6 @@ def snippet_update(request, snippet_id):
         return render(request, 'pages/upd_snippet.html', context)
 
     if request.method == 'POST':
-
-        LANGS = {
-            'py': 'Python',
-            'js': 'JavaScript',
-            'cpp':'C++',
-        }
 
         form = SnippetForm(request.POST)
         if form.is_valid():
