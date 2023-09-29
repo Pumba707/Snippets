@@ -2,12 +2,14 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from MainApp.models import Snippet
 from MainApp.form import SnippetForm
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 def index_page(request):
     context = {'pagename': 'PythonBin'}
     return render(request, 'pages/index.html', context)
 
-
+@login_required
 def add_snippet_page(request):
 
     if request.method == 'GET':
@@ -21,7 +23,11 @@ def add_snippet_page(request):
     if request.method == 'POST':
         form = SnippetForm(request.POST)
         if form.is_valid():
-            form.save()
+            snippet = form.save(commit=False)
+            if request.user.is_authenticated:
+                snippet.user = request.user
+                snippet.save()
+            #form.save()
             return redirect('snippets-list')
         
         print('non valid form')
@@ -129,3 +135,28 @@ def hide_hidden(request):
     request.session["show_hidden"] = False
 
     return redirect('snippets-list')
+
+
+
+def login(request):
+    if request.method=='POST':
+        username = request.POST.get('username')
+        print(username)
+        password = request.POST.get('password')
+        user = auth.authenticate(request,username=username,password=password)
+
+        if user is not None:
+            auth.login(request,user)
+        else:
+            pass
+
+    return redirect('home')
+
+
+
+def logout(request):
+    auth.logout(request)
+
+    return redirect('home')
+
+

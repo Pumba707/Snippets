@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 LANGS = (
     ('py', 'Python'),
@@ -12,3 +13,4 @@ class Snippet(models.Model):
     code = models.TextField(max_length=5000)
     hidden = models.BooleanField(default=False)
     creation_date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(to=User,on_delete=models.CASCADE,blank=True,null=True)
